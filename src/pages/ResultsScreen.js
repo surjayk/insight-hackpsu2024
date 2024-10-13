@@ -32,13 +32,16 @@ function ResultsScreen({ onBackToUpload, resultData }) {
     );
   }
 
-  // Extract summary and complexity data
+  // Extract the necessary data from resultData
   const { summary, complexity } = resultData;
-  const patientSummary = summary ? summary.summary : 'Summary unavailable';
-  
-  // Extract the complexity flag from the complexity result
+  console.log(summary)
+  console.log(complexity)
+
+  // Handle the first complexity entry from the array
   const complexityData = complexity ? complexity[0] : null;
-  const isComplex = complexityData && complexityData.Predicted_Flagged_Complex === 1 ? 'Yes' : 'No';
+  const isComplex = complexityData?.Predicted_Flagged_Complex ? 'Yes' : 'No';
+  const complexityProbability = complexityData?.Predicted_Probability || 'N/A';
+  const patientSummary = summary.summary || 'No summary available';
 
   // Conclusion message based on complexity
   const conclusionMessage = isComplex === 'Yes'
@@ -47,7 +50,7 @@ function ResultsScreen({ onBackToUpload, resultData }) {
 
   return (
     <Box
-      className="gradient-background" // Apply the gradient background
+      className="gradient-background"
       sx={{
         minHeight: '100vh',
         paddingTop: 4,
@@ -73,10 +76,10 @@ function ResultsScreen({ onBackToUpload, resultData }) {
       <Box
         sx={{
           mb: 2,
-          width: '30vw', // Smaller width
-          maxWidth: '200px', // Cap the maximum width to 200px
+          width: '30vw',
+          maxWidth: '200px',
           height: 'auto',
-          margin: '0 auto', // Center the logo
+          margin: '0 auto',
         }}
       >
         <Lottie
@@ -139,6 +142,16 @@ function ResultsScreen({ onBackToUpload, resultData }) {
               }}
             >
               {isComplex}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'gray',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
+            >
+              Probability: {complexityProbability}
             </Typography>
           </Paper>
         </Box>
