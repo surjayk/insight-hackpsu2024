@@ -11,7 +11,7 @@ function App() {
     setCurrentScreen('processing');
     setTimeout(() => {
       setCurrentScreen('results'); // Move to results screen after delay
-    }, 2000); 
+    }, 25000); 
   };
 
   // Function to navigate back to the upload screen
@@ -19,10 +19,15 @@ function App() {
     setCurrentScreen('upload');
   };
 
+  // Function to handle cancellation in the processing screen
+  const handleCancel = () => {
+    setCurrentScreen('upload'); // Navigate back to the upload screen
+  };
+
   return (
     <div>
       {currentScreen === 'upload' && <UploadScreen onFileUpload={handleFileUpload} />}
-      {currentScreen === 'processing' && <ProcessingScreen />}
+      {currentScreen === 'processing' && <ProcessingScreen onCancel={handleCancel} />}
       {currentScreen === 'results' && <ResultsScreen onBackToUpload={handleBackToUpload} />}
     </div>
   );

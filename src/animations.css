@@ -1,5 +1,5 @@
 .gradient-background {
-    background: linear-gradient(180deg,#ffffff,#acd3e9);
+    background: linear-gradient(180deg, #ffffff, #acd3e9);
     background-size: 120% 120%;
     animation: gradient-animation 12s ease infinite;
   }
@@ -15,3 +15,26 @@
       background-position: 0% 50%;
     }
   }
+  
+  /* Keyframes for continuous counterclockwise rotation and slight opacity change */
+  @keyframes rotateAndFade {
+    0% {
+      transform: rotate(0deg);
+      opacity: 1; /* Fully visible */
+    }
+    50% {
+      transform: rotate(-180deg); /* Counterclockwise rotation */
+      opacity: 0.7; /* Slightly fade */
+    }
+    100% {
+      transform: rotate(-360deg); /* Full counterclockwise rotation */
+      opacity: 1; /* Fully visible again */
+    }
+  }
+  
+  /* Apply the continuous rotation (counterclockwise) and partial opacity fade to the stethoscope */
+  .rotating-stethoscope {
+    animation: rotateAndFade 3s infinite linear; /* Infinite counterclockwise rotation with slight fading */
+    display: block;
+  }
+  

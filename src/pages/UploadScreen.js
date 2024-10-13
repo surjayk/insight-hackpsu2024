@@ -10,7 +10,7 @@ import '../animations.css'; // Import the CSS with the gradient background
 function UploadScreen({ onFileUpload }) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [typedText, setTypedText] = useState('');
-  const fullText = 'Upload patient electronic health records below (.csv or .pdf).';
+  const fullText = 'Upload patient electronic health records below (.csv).';
 
   useEffect(() => {
     let index = 0;
@@ -27,8 +27,7 @@ function UploadScreen({ onFileUpload }) {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
-      'application/pdf': ['.pdf'],
-      'text/csv': ['.csv'],
+      'text/csv': ['.csv']
     },
     onDrop: (acceptedFiles) => {
       console.log('Files uploaded:', acceptedFiles);
@@ -76,6 +75,7 @@ function UploadScreen({ onFileUpload }) {
           color: '#008FD5', // Text color set to #008FD5
           fontWeight: 'bold', // Make the text bold
           fontStyle: 'italic', // Make the text italic
+          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
         }}
       >
         {typedText}
@@ -147,7 +147,10 @@ function UploadScreen({ onFileUpload }) {
                   <InsertDriveFile
                     sx={{ color: '#007FFF', marginRight: '10px' }}
                   />
-                  <Typography variant="body1" sx={{ flexGrow: 1 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ flexGrow: 1, fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif' }} // San Francisco font stack
+                  >
                     {file.name}
                   </Typography>
                 </Box>
@@ -159,6 +162,7 @@ function UploadScreen({ onFileUpload }) {
                   mt: 2,
                   opacity: 0.6,
                   textAlign: 'center', // Centering the text
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
                 }}
               >
                 Drag and drop more files, or click to add more
@@ -176,6 +180,7 @@ function UploadScreen({ onFileUpload }) {
             marginTop: 2,
             marginBottom: 2, // Space between disclaimer and submit button
             textAlign: 'center',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
           }}
         >
           All patient data is processed locally and is not stored or shared.
@@ -197,6 +202,7 @@ function UploadScreen({ onFileUpload }) {
               backgroundColor: '#0073aa',
             },
           }}
+          disabled={uploadedFiles.length === 0} // Disable the button if no files are uploaded
           onClick={() => onFileUpload(uploadedFiles)}
         >
           Submit
