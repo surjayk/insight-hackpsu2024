@@ -34,14 +34,21 @@ function ResultsScreen({ onBackToUpload, resultData }) {
 
   // Extract the necessary data from resultData
   const { summary, complexity } = resultData;
-  console.log(summary)
-  console.log(complexity)
+  
+  // Parse the complexity data if it is a JSON string
+  let complexityParsed;
+  try {
+    complexityParsed = typeof complexity === 'string' ? JSON.parse(complexity) : complexity;
+  } catch (error) {
+    console.error('Failed to parse complexity data:', error);
+    complexityParsed = null;
+  }
 
   // Handle the first complexity entry from the array
-  const complexityData = complexity ? complexity[0] : null;
+  const complexityData = Array.isArray(complexityParsed) && complexityParsed.length > 0 ? complexityParsed[0] : null;
   const isComplex = complexityData?.Predicted_Flagged_Complex ? 'Yes' : 'No';
   const complexityProbability = complexityData?.Predicted_Probability || 'N/A';
-  const patientSummary = summary.summary || 'No summary available';
+  const patientSummary = summary?.summary || 'No summary available';
 
   // Conclusion message based on complexity
   const conclusionMessage = isComplex === 'Yes'
