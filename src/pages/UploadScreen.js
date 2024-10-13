@@ -6,8 +6,9 @@ import logoAnimation from '../assets/insight_logo_anim.json';
 import { InsertDriveFile } from '@mui/icons-material';
 import uploadIcon from '../assets/upload_icon.png';
 import '../animations.css'; // Import the CSS with the gradient background
+import axios from 'axios';
 
-function UploadScreen({ onFileUpload }) {
+function UploadScreen({ onFileUpload, onProcessingStart }) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [typedText, setTypedText] = useState('');
   const fullText = 'Upload patient electronic health records below (.csv).';
@@ -30,10 +31,35 @@ function UploadScreen({ onFileUpload }) {
       'text/csv': ['.csv']
     },
     onDrop: (acceptedFiles) => {
-      console.log('Files uploaded:', acceptedFiles);
       setUploadedFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
     },
   });
+
+  const handleSubmit = () => {
+    if (uploadedFiles.length === 0) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', uploadedFiles[0]); // Assuming only one file is uploaded
+
+    // Show the processing screen
+    onProcessingStart();
+
+    // Send the file to the backend
+    axios.post('http://localhost:5000/upload', formData)
+      .then(response => {
+        // Move to the results screen with the response data
+        onFileUpload(response.data);
+      })
+      .catch(error => {
+        console.error('There was an error uploading the file!', error);
+
+        // Optional: Handle the error by returning to the upload screen or showing an error message
+        alert('Error uploading file: ' + error.message);
+        // You might want to call a function here to reset the screen
+      });
+  };
 
   return (
     <Box
@@ -203,7 +229,7 @@ function UploadScreen({ onFileUpload }) {
             },
           }}
           disabled={uploadedFiles.length === 0} // Disable the button if no files are uploaded
-          onClick={() => onFileUpload(uploadedFiles)}
+          onClick={handleSubmit} // Trigger the file upload to backend
         >
           Submit
         </Button>

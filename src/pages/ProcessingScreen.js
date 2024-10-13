@@ -1,44 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Box, Button } from '@mui/material';
-import Lottie from 'lottie-react'; // Import Lottie for animation
-import '../animations.css'; // Import the CSS with the gradient background
-import loadingAnimation from '../assets/loading.json'; // Adjust the path as needed for your Lottie JSON
+import Lottie from 'lottie-react';
+import '../animations.css';
+import loadingAnimation from '../assets/loading.json';
 
 function ProcessingScreen({ onCancel }) {
   const [typedText, setTypedText] = useState('');
   const [dots, setDots] = useState('');
-  const fullText = 'Gaining insight'; // The full text without dots
+  const fullText = 'Gaining insight';
 
   useEffect(() => {
-    // Typing effect for the full text, similar to UploadScreen logic
     let index = 0;
     const typingInterval = setInterval(() => {
       if (index < fullText.length) {
-        setTypedText((prevText) => fullText.slice(0, index + 1)); // Properly slice up to the index
+        setTypedText(fullText.slice(0, index + 1));
         index++;
       } else {
-        clearInterval(typingInterval); // Stop typing once the full text is typed out
+        clearInterval(typingInterval);
       }
     }, 100);
 
-    return () => clearInterval(typingInterval); // Cleanup interval on unmount
+    return () => {
+      clearInterval(typingInterval);
+    };
   }, []);
 
   useEffect(() => {
-    // Logic for the dots animation after the text is fully typed out
     const dotsInterval = setInterval(() => {
-      setDots((prevDots) => {
-        if (prevDots.length === 3) return ''; // Reset dots after 3
-        return prevDots + '.'; // Add dots up to 3
-      });
-    }, 500); // Adjust the speed of the dots typing
+      setDots((prevDots) => (prevDots.length === 3 ? '' : prevDots + '.'));
+    }, 500);
 
-    return () => clearInterval(dotsInterval); // Cleanup interval when component unmounts
+    return () => {
+      clearInterval(dotsInterval);
+    };
   }, []);
+
+  const handleCancel = () => {
+    onCancel(); // This will reset the screen to 'Upload' in the parent component
+  };
 
   return (
     <Box
-      className="gradient-background" // Apply the gradient background
+      className="gradient-background"
       sx={{
         minHeight: '100vh',
         display: 'flex',
@@ -49,52 +52,48 @@ function ProcessingScreen({ onCancel }) {
         padding: '20px',
       }}
     >
-      {/* Title with typing effect */}
       <Typography
         variant="h6"
         sx={{
-          color: '#008FD5', // Set text color to blue
-          fontWeight: 'bold', // Make the text bold
-          fontStyle: 'italic', // Italicize text
-          fontSize: '1.8rem', // Increase font size
-          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // Use San Francisco font stack
+          color: '#008FD5',
+          fontWeight: 'bold',
+          fontStyle: 'italic',
+          fontSize: '1.8rem',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif',
         }}
       >
         {typedText}
-        <span>{dots}</span> {/* The dots will keep typing out */}
+        <span>{dots}</span>
       </Typography>
 
-      {/* Lottie Animation */}
       <Box
         sx={{
           mt: 4,
-          width: '300px', // Increased width for the Lottie container
-          height: '300px', // Increased height for the Lottie container
+          width: '300px',
+          height: '300px',
         }}
       >
         <Lottie
-          animationData={loadingAnimation} // Use the imported Lottie file
-          loop={true} // Ensure the animation loops
+          animationData={loadingAnimation}
+          loop={true}
           style={{
-            width: '100%', // Adjust to container width
-            height: '100%', // Adjust to container height
+            width: '100%',
+            height: '100%',
           }}
         />
       </Box>
 
-      {/* Info Text */}
       <Typography
         variant="body1"
         sx={{
           mt: 2,
-          fontStyle: 'italic', // Italicize the info text
-          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // Use San Francisco font stack
+          fontStyle: 'italic',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif',
         }}
       >
         This may take a few moments.
       </Typography>
 
-      {/* Cancel Button */}
       <Button
         variant="contained"
         color="secondary"
@@ -103,15 +102,15 @@ function ProcessingScreen({ onCancel }) {
           mt: 5,
           padding: '15px 50px',
           fontSize: '18px',
-          backgroundColor: '#008FD5', // Set the cancel button to blue
+          backgroundColor: '#008FD5',
           borderRadius: '10px',
           width: '60%',
           maxWidth: '500px',
           ':hover': {
-            backgroundColor: '#0074B7', // Darker blue on hover
+            backgroundColor: '#0074B7',
           },
         }}
-        onClick={onCancel} // Trigger the cancel callback
+        onClick={handleCancel}
       >
         Cancel
       </Button>

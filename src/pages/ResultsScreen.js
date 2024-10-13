@@ -5,21 +5,8 @@ import logoAnimation from '../assets/insight_logo_anim.json';
 import '../animations.css'; // Import the CSS with the gradient background
 import { Assignment, Assessment, DoneAll } from '@mui/icons-material'; // Icons for the categories
 
-function ResultsScreen({ onBackToUpload }) {
-  // Fake Data (replace this with your real data)
-  const fakeResults = {
-    isComplex: "No", // Flag indicating if the case is complex or not ("Yes" or "No")
-    summary: "Patient is a 65-year-old male with a history of hypertension, diabetes, and hyperlipidemia. Recent lab results indicate elevated LDL cholesterol. Current medications include metformin, lisinopril, and atorvastatin. The patient has undergone 3 surgeries in the past 5 years and has a BMI of 30.",
-  };
-
-  const { isComplex, summary } = fakeResults;
-
-  // Conclusion message based on complexity
-  const conclusionMessage = isComplex === "Yes"
-    ? "Additional time is required for this patient due to the complexity of the case."
-    : "Please schedule as normal for this patient.";
-
-  // Typing effect for the "Here's the" text
+function ResultsScreen({ onBackToUpload, resultData }) {
+  // Ensure hooks are called unconditionally
   const [typedText, setTypedText] = useState('');
   const fullText = "Here's the";
 
@@ -35,6 +22,28 @@ function ResultsScreen({ onBackToUpload }) {
     }, 50); // Typing speed in milliseconds
     return () => clearInterval(typingEffect);
   }, []);
+
+  // If resultData is null or undefined, render fallback message
+  if (!resultData) {
+    return (
+      <Typography variant="h6" sx={{ textAlign: 'center', marginTop: '20px' }}>
+        No data available. Please upload a file.
+      </Typography>
+    );
+  }
+
+  // Extract summary and complexity data
+  const { summary, complexity } = resultData;
+  const patientSummary = summary ? summary.summary : 'Summary unavailable';
+  
+  // Extract the complexity flag from the complexity result
+  const complexityData = complexity ? complexity[0] : null;
+  const isComplex = complexityData && complexityData.Predicted_Flagged_Complex === 1 ? 'Yes' : 'No';
+
+  // Conclusion message based on complexity
+  const conclusionMessage = isComplex === 'Yes'
+    ? "Additional time is required for this patient due to the complexity of the case."
+    : "Please schedule as normal for this patient.";
 
   return (
     <Box
@@ -54,12 +63,13 @@ function ResultsScreen({ onBackToUpload }) {
           color: '#008FD5',
           fontWeight: 'bold',
           fontStyle: 'italic',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
         }}
       >
         {typedText}
       </Typography>
 
-      {/* Animated Logo (which reads as "insight") */}
+      {/* Animated Logo */}
       <Box
         sx={{
           mb: 2,
@@ -81,7 +91,14 @@ function ResultsScreen({ onBackToUpload }) {
 
       <Container maxWidth="md" sx={{ mt: 2 }}>
         {/* Assessment Date */}
-        <Typography variant="subtitle1" sx={{ color: 'gray', mb: 4 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'gray',
+            mb: 4,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+          }}
+        >
           Assessment conducted on: {new Date().toLocaleString()}
         </Typography>
 
@@ -101,14 +118,27 @@ function ResultsScreen({ onBackToUpload }) {
             }}
           >
             <Assignment sx={{ fontSize: 40, color: '#008FD5', mb: 2 }} />
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
+            >
               Complexity of Case
             </Typography>
             <Typography
               variant="body1"
-              sx={{ fontWeight: 'bold', color: isComplex === "Yes" ? 'red' : 'green', textAlign: 'center' }}
+              sx={{
+                fontWeight: 'bold',
+                color: isComplex === 'Yes' ? 'red' : 'green',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
             >
-              {isComplex === "Yes" ? "Complex" : "Not Complex"}
+              {isComplex}
             </Typography>
           </Paper>
         </Box>
@@ -129,11 +159,25 @@ function ResultsScreen({ onBackToUpload }) {
             }}
           >
             <Assessment sx={{ fontSize: 40, color: '#008FD5', mb: 2 }} />
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
+            >
               Patient Summary
             </Typography>
-            <Typography variant="body1" sx={{ textAlign: 'center' }}>
-              {summary}
+            <Typography
+              variant="body1"
+              sx={{
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
+            >
+              {patientSummary}
             </Typography>
           </Paper>
         </Box>
@@ -144,7 +188,7 @@ function ResultsScreen({ onBackToUpload }) {
             elevation={3}
             sx={{
               padding: '16px',
-              backgroundColor: isComplex === "Yes" ? '#fff0f0' : '#f0fff0', // Greenish for non-complex cases
+              backgroundColor: isComplex === 'Yes' ? '#fff0f0' : '#f0fff0', // Greenish for non-complex cases
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -153,12 +197,25 @@ function ResultsScreen({ onBackToUpload }) {
             }}
           >
             <DoneAll sx={{ fontSize: 40, color: '#008FD5', mb: 2 }} />
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
+            >
               Conclusion
             </Typography>
             <Typography
               variant="body1"
-              sx={{ color: isComplex === "Yes" ? 'red' : 'green', fontWeight: 'bold', textAlign: 'center' }}
+              sx={{
+                color: isComplex === 'Yes' ? 'red' : 'green',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Segoe UI", "Arial", sans-serif', // San Francisco font stack
+              }}
             >
               {conclusionMessage}
             </Typography>
