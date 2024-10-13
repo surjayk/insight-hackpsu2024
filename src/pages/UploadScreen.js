@@ -178,7 +178,7 @@ function UploadScreen({ onFileUpload }) {
             textAlign: 'center',
           }}
         >
-          All patient data is processed locally and is not stored or shared. HIPAA compliant.
+          All patient data is processed locally and is not stored or shared.
         </Typography>
 
         {/* Submit Button */}

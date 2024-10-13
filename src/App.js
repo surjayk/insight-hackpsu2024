@@ -8,20 +8,22 @@ function App() {
 
   // Function to handle file upload and move to the processing screen
   const handleFileUpload = () => {
-    // Move to the processing screen
     setCurrentScreen('processing');
-
-    // Simulate a delay before moving to the results screen
     setTimeout(() => {
-      setCurrentScreen('results'); // Move to results screen
-    }, 3000); // Simulate a 3-second processing time
+      setCurrentScreen('results'); // Move to results screen after delay
+    }, 2000); 
+  };
+
+  // Function to navigate back to the upload screen
+  const handleBackToUpload = () => {
+    setCurrentScreen('upload');
   };
 
   return (
     <div>
       {currentScreen === 'upload' && <UploadScreen onFileUpload={handleFileUpload} />}
       {currentScreen === 'processing' && <ProcessingScreen />}
-      {currentScreen === 'results' && <ResultsScreen />}
+      {currentScreen === 'results' && <ResultsScreen onBackToUpload={handleBackToUpload} />}
     </div>
   );
 }
