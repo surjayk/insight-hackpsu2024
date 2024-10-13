@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Box, Button } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
-import logo from '../assets/insight_logo.png';
-import '../animations.css';
+import Lottie from 'lottie-react';
+import logoAnimation from '../assets/insight_logo_anim.json';
+import { InsertDriveFile } from '@mui/icons-material';
+import uploadIcon from '../assets/upload_icon.png';
+import '../animations.css'; // Import the CSS with the gradient background
 
 function UploadScreen({ onFileUpload }) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [typedText, setTypedText] = useState('');
+  const fullText = 'Upload patient electronic health records below (.csv or .pdf).';
+
+  useEffect(() => {
+    let index = 0;
+    const typingEffect = setInterval(() => {
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index + 1)); // Correctly slice up to the current index
+        index++;
+      } else {
+        clearInterval(typingEffect); // Stop typing when fullText is fully typed
+      }
+    }, 50); // Typing speed in milliseconds
+    return () => clearInterval(typingEffect); // Cleanup interval on unmount
+  }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -20,31 +38,48 @@ function UploadScreen({ onFileUpload }) {
 
   return (
     <Box
+      className="gradient-background" // Apply the gradient background
       sx={{
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
         padding: '20px',
       }}
     >
-      {/* Logo */}
+      {/* Lottie Animation */}
       <Box
         sx={{
-          mb: 4,
+          mb: 2,
+          width: '60vw', // Moderate width, 60% of the viewport width
+          maxWidth: '500px', // Cap the maximum width to 500px
+          height: 'auto', // Let height adjust automatically
         }}
       >
-        <img
-          src={logo}
-          alt="Insight Logo"
+        <Lottie
+          animationData={logoAnimation}
+          loop={false} // Animation should play once and remain static
           style={{
-            width: '300px',
-            filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.5))',
+            width: '100%', // Scale to the container width
+            height: '100%', // Maintain aspect ratio
           }}
         />
       </Box>
+
+      {/* Typing Animation Text */}
+      <Typography
+        variant="h6"
+        sx={{
+          mb: 3, // Adds margin-bottom to space from the dropbox
+          textAlign: 'center',
+          color: '#008FD5', // Text color set to #008FD5
+          fontWeight: 'bold', // Make the text bold
+          fontStyle: 'italic', // Make the text italic
+        }}
+      >
+        {typedText}
+      </Typography>
 
       {/* DropBox + Submit Button Group */}
       <Box
@@ -60,47 +95,91 @@ function UploadScreen({ onFileUpload }) {
           {...getRootProps()}
           sx={{
             border: '3px dashed #007FFF',
+            borderColor: 'rgba(0, 127, 255, 0.3)', // Reduced opacity on border
             borderRadius: '15px',
-            padding: '60px',
+            padding: '30px',
             width: '60%',
             maxWidth: '500px',
-            height: '300px',
+            height: '300px', // Fixed height for dropbox
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             cursor: 'pointer',
             mb: 1,
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
             flexDirection: 'column',
+            justifyContent: uploadedFiles.length > 0 ? 'flex-start' : 'center',
+            alignItems: 'center', // Center the content inside the dropbox
+            overflowY: 'auto', // Enable vertical scrolling when needed
+
+            /* Inner shadow to create depth */
+            boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.2)', // Inner shadow for depth
           }}
         >
           <input {...getInputProps()} />
           {uploadedFiles.length === 0 ? (
-            <Typography
-              variant="h6"
-              sx={{
-                opacity: 0.6,
+            // Show the upload icon with reduced opacity if no files uploaded
+            <img
+              src={uploadIcon}
+              alt="Upload Icon"
+              style={{
+                width: '150px', // Set the image width
+                opacity: 0.5, // Reduce opacity
               }}
-            >
-              Please upload patient records (.csv or .pdf)
-            </Typography>
+            />
           ) : (
-            <Box sx={{ width: '100%', textAlign: 'center' }}>
-              <Typography variant="subtitle1">Uploaded Files:</Typography>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                {uploadedFiles.map((file, index) => (
-                  <li key={index}>
-                    <Typography variant="body1">{file.name}</Typography>
-                  </li>
-                ))}
-              </ul>
-              <Typography variant="body2" sx={{ mt: 2, opacity: 0.6 }}>
-                Drag and drop more files here, or click to select files
+            <Box sx={{ width: '100%' }}>
+              {uploadedFiles.map((file, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '10px',
+                    marginBottom: '8px',
+                    borderRadius: '10px',
+                    backgroundColor: '#f5f5f5', // Light grey background for file cards
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    transition: 'transform 0.2s ease-in-out',
+                    ':hover': {
+                      transform: 'scale(1.02)',
+                    },
+                  }}
+                >
+                  <InsertDriveFile
+                    sx={{ color: '#007FFF', marginRight: '10px' }}
+                  />
+                  <Typography variant="body1" sx={{ flexGrow: 1 }}>
+                    {file.name}
+                  </Typography>
+                </Box>
+              ))}
+              {/* Centered text after files are uploaded */}
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 2,
+                  opacity: 0.6,
+                  textAlign: 'center', // Centering the text
+                }}
+              >
+                Drag and drop more files, or click to add more
               </Typography>
             </Box>
           )}
         </Box>
+
+        {/* Disclaimer */}
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'gray',
+            fontStyle: 'italic',
+            marginTop: 2,
+            marginBottom: 2, // Space between disclaimer and submit button
+            textAlign: 'center',
+          }}
+        >
+          All patient data is processed locally and is not stored or shared. HIPAA compliant.
+        </Typography>
 
         {/* Submit Button */}
         <Button
